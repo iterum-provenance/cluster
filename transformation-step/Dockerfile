@@ -1,11 +1,11 @@
-FROM python:3.8-alpine
+FROM python:3.8
 
 RUN mkdir app/
 WORKDIR app/
 
-# ADD requirements.txt .
+ADD requirements.txt .
 
-# RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 ADD main.py .
 

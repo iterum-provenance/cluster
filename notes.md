@@ -27,3 +27,8 @@ kubectl port-forward $(kubectl get pods --namespace default -l "release=iterum-m
 ```
 go build -o ./build/ && BROKER_URL=amqp://iterum:sinaasappel@localhost:5672 OUTPUT_QUEUE=job1_input MINIO_URL=localhost:9000 MINIO_ACCESS_KEY=iterum MINIO_SECRET_KEY=banaanappel MINIO_OUTPUT_BUCKET=inputbucket ./build/iterum-data-producer
 ```
+
+* Remove all job pods:
+```
+kubectl get pods | grep iterum-job | awk '{print $1}' | xargs kubectl delete pod
+```

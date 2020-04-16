@@ -4,6 +4,7 @@ from socket import socket, AF_UNIX, SHUT_RDWR
 import struct
 import os
 import json
+from PIL import Image 
 
 def encode_fragment_desc_size(size: int) -> bytes:
     return struct.pack("<I", size)
@@ -70,9 +71,21 @@ if __name__ == "__main__":
     OUTPUT = os.getenv("DATA_VOLUME_PATH") + "/fts.sock"
     towards_sidecar = to_sidecar(OUTPUT)
     next(towards_sidecar)
-    for image_file in from_sidecar(INPUT):
-        print(image_file, flush=True)
-        # image_file["files"][0]['path'] = "./output/"+image_file["files"][0]['path'][8:]
-        time.sleep(5)
-        towards_sidecar.send(image_file)        
+    for image_files in from_sidecar(INPUT):
+        print(image_files, flush=True)
+        new_files = []
+        for image_file in image_files['files']:
+            path = image_file['path']
+            new_path = image_file['path']
+            colorImage  = Image.open(path)
+            rotated     = colorImage.rotate(30)
+            rotated.save(new_path, "JPEG")
+
+            # image_file["files"][0]['path'] = "./output/"+image_file["files"][0]['path'][8:]
+            time.sleep(1)
+            image_file['path'] = new_path 
+            image_file['name'] = image_file['name'] 
+            new_files.append(image_file)
+        
+        towards_sidecar.send({"files": new_files})        
         next(towards_sidecar)
