@@ -1,0 +1,24 @@
+@address = http://localhost:3000
+@dataset_path = pipeline1
+
+### Create new pipeline
+POST {{address}}/submit_pipeline HTTP/1.1
+content-type: application/json
+
+{
+  "name": "pipeline1",
+  "steps": [
+      {"name": "new-step1", "image": "transformation-step:1", "input_channel": "step1_input", "output_channel": "step1_output"},
+      {"name": "new-step2", "image": "transformation-step:1", "input_channel": "step1_output", "output_channel": "step2_output"}
+  ]
+}
+
+### Get pods
+GET {{address}}/get_pods HTTP/1.1
+
+
+### Get jobs
+GET {{address}}/get_jobs HTTP/1.1
+
+### Delete pipeline
+DELETE {{address}}/delete_pipelines HTTP/1.1
