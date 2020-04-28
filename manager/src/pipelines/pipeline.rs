@@ -1,4 +1,5 @@
 use crate::error::ManagerError;
+use crate::pipelines::combiner::create_combiner_template;
 use crate::pipelines::job::create_job_template;
 use k8s_openapi::api::batch::v1::Job;
 use k8s_openapi::api::core::v1::Pod;
@@ -31,9 +32,10 @@ pub struct PipelineJob {
 impl PipelineJob {
     pub async fn submit(&self) -> Result<(), ManagerError> {
         let client = Client::try_default().await.expect("create client");
-        let jobs: Api<Job> = Api::namespaced(client, "default");
+        let jobsClient: Api<Job> = Api::namespaced(client, "default");
         let pp = PostParams::default();
 
+        let mut jobs: Vec<Job> = vec![];
         for step in &self.steps {
             let job = create_job_template(
                 &step.name,
@@ -41,13 +43,26 @@ impl PipelineJob {
                 &step.input_channel,
                 &step.output_channel,
             )?;
-            match jobs.create(&pp, &job).await {
+            jobs.push(job);
+        }
+        let job = create_combiner_template(
+            "combiner",
+            "localhost:32000/combiner:1",
+            "step2_output",
+            "test_dataset",
+            "1",
+            "http://daemon-service",
+        )?;
+        jobs.push(job);
+
+        for job in jobs {
+            match jobsClient.create(&pp, &job).await {
                 Ok(o) => {
                     let name = Meta::name(&o);
                     assert_eq!(Meta::name(&job), name);
                     info!("Created {}", name);
                     // wait for it..
-                    std::thread::sleep(std::time::Duration::from_millis(5_000));
+                    std::thread::sleep(std::time::Duration::from_millis(1_000));
                 }
                 Err(kube::Error::Api(ae)) => assert_eq!(ae.code, 409), // if you skipped delete, for instance
                 Err(e) => return Err(e.into()), // any other case is probably bad

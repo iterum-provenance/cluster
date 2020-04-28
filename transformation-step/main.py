@@ -66,11 +66,14 @@ def to_sidecar(socket_name:str) -> None:
 
 
 if __name__ == "__main__":
+    print("Started transformation step!", flush=True)
     ENC_FRAGMENT_SIZE_LENGTH = 4
     INPUT = os.getenv("DATA_VOLUME_PATH") + "/tts.sock"
     OUTPUT = os.getenv("DATA_VOLUME_PATH") + "/fts.sock"
     towards_sidecar = to_sidecar(OUTPUT)
     next(towards_sidecar)
+    print("Started listening!", flush=True)
+
     for image_files in from_sidecar(INPUT):
         print(image_files, flush=True)
         new_files = []

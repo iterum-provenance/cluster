@@ -25,7 +25,7 @@ pub fn create_job_template(
                     ],
                     "containers": [{
                         "name": "sidecar",
-                        "image": "sidecar:1",
+                        "image": "localhost:32000/sidecar:1",
                         "env": [
                             {"name": "BROKER_URL", "value": "amqp://iterum:sinaasappel@iterum-mq-rabbitmq-ha:5672"},
                             {"name": "INPUT_QUEUE", "value": input_channel},
@@ -35,6 +35,8 @@ pub fn create_job_template(
                             {"name": "MINIO_SECRET_KEY", "value": "banaanappel"},
                             {"name": "MINIO_OUTPUT_BUCKET", "value": "outputbucket"},
                             {"name": "DATA_VOLUME_PATH", "value": "/data-volume"},
+                            {"name": "FRAGMENTER_INPUT", "value": "/data-volume/tts.sock"},
+                            {"name": "FRAGMENTER_OUTPUT", "value": "/data-volume/fts.sock"},
                         ],
                         "volumeMounts": [{
                             "name": "data-volume",

@@ -1,4 +1,4 @@
-@address = http://localhost:3000
+@address = http://localhost:3001
 @dataset_path = pipeline1
 
 ### Create new pipeline
@@ -7,10 +7,13 @@ content-type: application/json
 
 {
   "name": "pipeline1",
+  "hash": "1",
   "steps": [
-      {"name": "new-step1", "image": "transformation-step:1", "input_channel": "step1_input", "output_channel": "step1_output"},
-      {"name": "new-step2", "image": "transformation-step:1", "input_channel": "step1_output", "output_channel": "step2_output"}
-  ]
+      {"name": "new-step1", "image": "localhost:32000/transformation-step:1", "input_channel": "step1_input", "output_channel": "step1_output"},
+      {"name": "new-step2", "image": "localhost:32000/transformation-step:1", "input_channel": "step1_output", "output_channel": "step2_output"}
+  ],
+  "input_dataset": "test_dataset",
+  "fragmenter_image": "banaan"
 }
 
 ### Get pods

@@ -1,3 +1,4 @@
+pub mod combiner;
 pub mod job;
 pub mod pipeline;
 pub mod routes;

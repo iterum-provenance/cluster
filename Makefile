@@ -4,7 +4,13 @@ image-transformation-step:
 	kind load docker-image transformation-step:1 --name kind
 
 image-sidecar:
-	kind load docker-image iterum-sidecar:1 --name kind
+	kind load docker-image sidecar:1 --name kind
+
+image-combiner:
+	kind load docker-image combiner:1 --name kind
+
+image-daemon:
+	kind load docker-image daemon:1 --name kind
 
 image-data-producer:
 	docker build -t data-producer:1 ./data-producer

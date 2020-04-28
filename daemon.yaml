@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daemon-deployment
+  labels:
+    app: daemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: daemon
+  template:
+    metadata:
+      labels:
+        app: daemon
+    spec:
+      containers:
+      - name: daemon
+        image: localhost:32000/daemon:1
+        env:
+        - name: HOST
+          value: "127.0.0.1"
+        - name: PORT
+          value: "3000"
+        ports:
+        - containerPort: 3000
+          name: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: daemon-service
+spec:
+  selector:
+    app: daemon
+  ports:
+  - protocol: TCP
+    targetPort: 3000
+    port: 3000
+  type: ClusterIP
