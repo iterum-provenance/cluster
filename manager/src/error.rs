@@ -35,18 +35,9 @@ impl From<kube::error::Error> for ManagerError {
 
 impl ResponseError for ManagerError {
     fn error_response(&self) -> HttpResponse {
-        let status_code = match self {
-            _ => StatusCode::INTERNAL_SERVER_ERROR,
-        };
+        let status_code = StatusCode::INTERNAL_SERVER_ERROR;
 
         let message = format!("{}", self);
-        // match self {
-        //     DaemonError::Io(err) => format!("{}", err),
-        //     DaemonError::Serialization(err) => format!("{}", err),
-        //     DaemonError::Cache(err) => format!("{}", err),
-        //     DaemonError::NotFound(err) => format!("{}", err),
-        // };
-
         HttpResponse::build(status_code).json(json!({ "message": message }))
     }
 }

@@ -14,17 +14,29 @@ spec:
       labels:
         app: daemon
     spec:
+      volumes:
+      - name: daemon-pv-storage
+        persistentVolumeClaim:
+          claimName: daemon-pv-claim
       containers:
       - name: daemon
         image: localhost:32000/daemon:1
         env:
         - name: HOST
-          value: "127.0.0.1"
+          value: "0.0.0.0"
         - name: PORT
           value: "3000"
+        - name: RUST_LOG
+          value: "daemon=debug,actix=debug"
+        - name: CACHE_PATH
+          value: "/localStorage/.cache"
         ports:
         - containerPort: 3000
+          hostPort: 3000
           name: http
+        volumeMounts:
+        - mountPath: "/localStorage/"
+          name: daemon-pv-storage
 ---
 kind: Service
 apiVersion: v1

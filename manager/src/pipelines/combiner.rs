@@ -1,39 +1,47 @@
 use crate::error::ManagerError;
+use crate::pipelines::pipeline::PipelineJob;
 use k8s_openapi::api::batch::v1::Job;
 use serde_json::json;
+use std::env;
 
-pub fn create_combiner_template(
-    name: &str,
-    image: &str,
-    input_channel: &str,
-    dataset_name: &str,
-    pipeline_hash: &str,
-    daemon_url: &str,
-) -> Result<Job, ManagerError> {
+pub fn create_combiner_template(pipeline_job: &PipelineJob) -> Result<Job, ManagerError> {
+    let hash = format!("{}-combiner", &pipeline_job.pipeline_hash);
+
     let job: Job = serde_json::from_value(json!({
         "apiVersion": "batch/v1",
         "kind": "Job",
-        "metadata": { "name": name },
+        "metadata": { "name": hash, "labels": {"pipeline_hash": pipeline_job.pipeline_hash} },
         "spec": {
-            "completions": 1,
             "parallelism": 1,
             "template": {
                 "metadata": {
-                    "name": name
+                    "name": hash
                 },
                 "spec": {
                     "containers": [{
                         "name": "combiner",
-                        "image": "localhost:32000/combiner:1",
+                        "image": env::var("COMBINER_IMAGE").unwrap(),
                         "env": [
-                            {"name": "BROKER_URL", "value": "amqp://iterum:sinaasappel@iterum-mq-rabbitmq-ha:5672"},
-                            {"name": "INPUT_QUEUE", "value": input_channel},
-                            {"name": "MINIO_URL", "value": "iterum-minio:9000"},
-                            {"name": "MINIO_ACCESS_KEY", "value": "iterum"},
-                            {"name": "MINIO_SECRET_KEY", "value": "banaanappel"},
-                            {"name": "PIPELINE_HASH", "value": pipeline_hash},
-                            {"name": "DAEMON_URL", "value": daemon_url},
-                            {"name": "DATASET_NAME", "value": dataset_name},
+                            {"name": "DATA_VOLUME_PATH", "value": "/data-volume"},
+                            {"name": "ITERUM_NAME", "value": &pipeline_job.name},
+                            {"name": "PIPELINE_HASH", "value": &pipeline_job.pipeline_hash},
+
+                            {"name": "DAEMON_URL", "value": env::var("DAEMON_URL").unwrap()},
+                            {"name": "DAEMON_DATASET", "value": &pipeline_job.input_dataset},
+                            {"name": "DAEMON_COMMIT_HASH", "value": &pipeline_job.input_dataset_commit_hash},
+
+                            {"name": "MINIO_URL", "value": env::var("MINIO_URL").unwrap()},
+                            {"name": "MINIO_ACCESS_KEY", "value": env::var("MINIO_ACCESS_KEY").unwrap()},
+                            {"name": "MINIO_SECRET_KEY", "value": env::var("MINIO_SECRET_KEY").unwrap()},
+                            {"name": "MINIO_USE_SSL", "value": env::var("MINIO_USE_SSL").unwrap()},
+                            {"name": "MINIO_OUTPUT_BUCKET", "value": ""},
+
+                            {"name": "MQ_BROKER_URL", "value": env::var("MQ_BROKER_URL").unwrap()},
+                            {"name": "MQ_OUTPUT_QUEUE", "value": "INVALID"},
+                            {"name": "MQ_INPUT_QUEUE", "value": &pipeline_job.combiner_input_channel},
+
+                            {"name": "FRAGMENTER_INPUT", "value": "tts.sock"},
+                            {"name": "FRAGMENTER_OUTPUT", "value": "fts.sock"},
 
                         ]
                     }],
