@@ -20,7 +20,7 @@ spec:
           claimName: daemon-pv-claim
       containers:
       - name: daemon
-        image: localhost:32000/daemon:1
+        image: localhost:32000/daemon:latest
         env:
         - name: HOST
           value: "0.0.0.0"

@@ -38,9 +38,11 @@ impl Handler<NewPipelineMessage> for PipelineManager {
             msg.pipeline_hash
         );
         if !self.addresses.contains_key(&msg.pipeline_hash) {
+            info!("Actor addres does not exist in map yet. Adding it.");
             self.addresses.insert(msg.pipeline_hash, msg.address);
             true
         } else {
+            info!("Actor address already exists in map.");
             false
         }
     }
@@ -67,7 +69,10 @@ impl Handler<RequestAddress> for PipelineManager {
 
         match self.addresses.get(&msg.pipeline_hash) {
             Some(address) => Some(address.clone()),
-            None => None,
+            None => {
+                info!("Pipeline manager could not retrieve address.");
+                None
+            }
         }
     }
 }

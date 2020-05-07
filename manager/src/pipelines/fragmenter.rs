@@ -27,12 +27,14 @@ pub fn create_fragmenter_template(pipeline_job: &PipelineJob) -> Result<Job, Man
                         "image": env::var("FRAGMENTER_SIDECAR_IMAGE").unwrap(),
                         "env": [
                             {"name": "DATA_VOLUME_PATH", "value": "/data-volume"},
-                            {"name": "ITERUM_NAME", "value": &pipeline_job.name},
+                            {"name": "ITERUM_NAME", "value": &hash},
                             {"name": "PIPELINE_HASH", "value": &pipeline_job.pipeline_hash},
 
                             {"name": "DAEMON_URL", "value": env::var("DAEMON_URL").unwrap()},
                             {"name": "DAEMON_DATASET", "value": &pipeline_job.input_dataset},
                             {"name": "DAEMON_COMMIT_HASH", "value": &pipeline_job.input_dataset_commit_hash},
+
+                            {"name": "MANAGER_URL", "value": env::var("MANAGER_URL").unwrap()},
 
                             {"name": "MINIO_URL", "value": env::var("MINIO_URL").unwrap()},
                             {"name": "MINIO_ACCESS_KEY", "value": env::var("MINIO_ACCESS_KEY").unwrap()},
@@ -57,8 +59,8 @@ pub fn create_fragmenter_template(pipeline_job: &PipelineJob) -> Result<Job, Man
                         "image": &pipeline_job.fragmenter_image,
                         "env": [
                             {"name": "DATA_VOLUME_PATH", "value": "/data-volume"},
-                            {"name": "FRAGMENTER_INPUT", "value": "/data-volume/tts.sock"},
-                            {"name": "FRAGMENTER_OUTPUT", "value": "/data-volume/fts.sock"},
+                            {"name": "FRAGMENTER_INPUT", "value": "tts.sock"},
+                            {"name": "FRAGMENTER_OUTPUT", "value": "fts.sock"},
                         ],
                         "volumeMounts": [{
                             "name": "data-volume",

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager-deployment
+  labels:
+    app: manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: manager
+  template:
+    metadata:
+      labels:
+        app: manager
+    spec:
+      containers:
+      - name: manager
+        image: localhost:32000/manager:latest
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "3001"
+        - name: RUST_LOG
+          value: "manager=debug,actix=debug"
+        - name: MQ_BROKER_URL
+          value: "amqp://iterum:sinaasappel@iterum-mq-rabbitmq-ha:5672"
+        - name: MINIO_URL
+          value: "iterum-minio:9000"
+        - name: MINIO_ACCESS_KEY
+          value: "iterum"
+        - name: MINIO_SECRET_KEY
+          value: "banaanappel"
+        - name: MINIO_USE_SSL
+          value: "0"
+        - name: DAEMON_URL
+          value: "http://daemon-service:3000"
+        - name: MANAGER_URL
+          value: "http://manager-service:3001"
+        - name: SIDECAR_IMAGE
+          value: "localhost:32000/sidecar:latest"
+        - name: FRAGMENTER_SIDECAR_IMAGE
+          value: "localhost:32000/fragmenter-sidecar:latest"
+        - name: COMBINER_IMAGE
+          value: "localhost:32000/combiner:latest"
+        ports:
+        - containerPort: 3001
+          hostPort: 3001
+          name: http
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: manager-service
+spec:
+  selector:
+    app: manager
+  ports:
+  - protocol: TCP
+    targetPort: 3001
+    port: 3001
+  type: ClusterIP

@@ -56,6 +56,6 @@ async fn main() -> std::io::Result<()> {
 
     // let response = addr.send(Ping { amount: 1 });
 
-    info!("Starting Iterum Daemon");
+    info!("Starting Iterum Cluster Manager");
     server.run().await
 }

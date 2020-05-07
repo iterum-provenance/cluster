@@ -77,7 +77,10 @@ async fn submit_pipeline_actor(
     let mut outputs = HashMap::new();
     let mut first_node_upstream_map: HashMap<String, String> = HashMap::new();
     for step in &pipeline.steps {
-        outputs.insert(step.output_channel.to_string(), step.name.to_string());
+        outputs.insert(
+            step.output_channel.to_string(),
+            format!("{}-{}", pipeline.pipeline_hash, step.name.to_string()),
+        );
     }
     outputs.insert(
         pipeline.fragmenter_output_channel.to_string(),
@@ -116,10 +119,11 @@ async fn submit_pipeline_actor(
             first_node_upstream_map,
         };
         let address = actor.start();
-        let _ = config.manager.send(NewPipelineMessage {
+        let result = config.manager.send(NewPipelineMessage {
             pipeline_hash: pipeline.pipeline_hash.to_string(),
             address,
         });
+        result.await.unwrap();
         Ok(HttpResponse::Ok().json(pipeline))
     } else {
         Ok(HttpResponse::Conflict().json(json!({"message":"Pipeline is not valid."})))
@@ -161,8 +165,11 @@ async fn is_step_done(
     config: web::Data<config::Config>,
     path: web::Path<(String, String)>,
 ) -> Result<HttpResponse, ManagerError> {
-    info!("Getting status of step");
     let (pipeline_hash, step_name) = path.into_inner();
+    info!(
+        "Getting status of step named {} from pipeline with hash {}",
+        step_name, pipeline_hash
+    );
 
     let address = match config
         .manager
@@ -178,7 +185,10 @@ async fn is_step_done(
     let status = address.send(JobStatusMessage { step_name }).await;
     info!("Status: {:?}", status);
     match status {
-        Ok(status) => Ok(HttpResponse::Ok().json(status.unwrap_or(false))),
+        Ok(status) => {
+            let status = status.unwrap_or(false);
+            Ok(HttpResponse::Ok().json(json!({ "finished": status })))
+        }
         Err(_) => Ok(HttpResponse::Conflict().finish()),
     }
 }

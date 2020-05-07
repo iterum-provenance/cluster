@@ -21,7 +21,7 @@ content-type: application/json
 
 
 
-@pipeline_hash = 1
+@pipeline_hash = 16
 ### Create new pipeline actor
 POST {{address}}/submit_pipeline_actor HTTP/1.1
 content-type: application/json
@@ -30,18 +30,18 @@ content-type: application/json
   "pipeline_hash": "{{pipeline_hash}}",
   "name": "pipeline1",
   "input_dataset": "test_dataset",
-  "input_dataset_commit_hash": "bZtoviHWHFtlf7Bofa2JtWVNXmWFEGG1",
-  "fragmenter_image": "localhost:32000/fragmenter:3",
+  "input_dataset_commit_hash": "afong990j9QV7nB8ZiBRlhb3yspXjvgZ",
+  "fragmenter_image": "localhost:32000/fragmenter:5",
   "fragmenter_output_channel": "step1_input",
   "steps": [
-      {"name": "new-step1", "image": "localhost:32000/transformation-step:3", "input_channel": "step1_input", "output_channel": "step1_output"},
-      {"name": "new-step2", "image": "localhost:32000/transformation-step:3", "input_channel": "step1_output", "output_channel": "step2_output"}
+      {"name": "new-step1", "image": "localhost:32000/transformation-step:5", "input_channel": "step1_input", "output_channel": "step1_output"},
+      {"name": "new-step2", "image": "localhost:32000/transformation-step:5", "input_channel": "step1_output", "output_channel": "step2_output"}
   ],
   "combiner_input_channel": "step2_output"
 }
 
 ### Get upstream status
-GET {{address}}/pipeline/{{pipeline_hash}}/{{pipeline_hash}}-new-step2/upstream_finished HTTP/1.1
+GET {{address}}/pipeline/{{pipeline_hash}}/{{pipeline_hash}}-new-step1/upstream_finished HTTP/1.1
 
 
 ### Get pods

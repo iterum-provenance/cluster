@@ -23,25 +23,29 @@ pub fn create_combiner_template(pipeline_job: &PipelineJob) -> Result<Job, Manag
                         "image": env::var("COMBINER_IMAGE").unwrap(),
                         "env": [
                             {"name": "DATA_VOLUME_PATH", "value": "/data-volume"},
-                            {"name": "ITERUM_NAME", "value": &pipeline_job.name},
+                            {"name": "ITERUM_NAME", "value": &hash},
                             {"name": "PIPELINE_HASH", "value": &pipeline_job.pipeline_hash},
 
                             {"name": "DAEMON_URL", "value": env::var("DAEMON_URL").unwrap()},
                             {"name": "DAEMON_DATASET", "value": &pipeline_job.input_dataset},
                             {"name": "DAEMON_COMMIT_HASH", "value": &pipeline_job.input_dataset_commit_hash},
 
+
+                            {"name": "MANAGER_URL", "value": env::var("MANAGER_URL").unwrap()},
+
+
                             {"name": "MINIO_URL", "value": env::var("MINIO_URL").unwrap()},
                             {"name": "MINIO_ACCESS_KEY", "value": env::var("MINIO_ACCESS_KEY").unwrap()},
                             {"name": "MINIO_SECRET_KEY", "value": env::var("MINIO_SECRET_KEY").unwrap()},
                             {"name": "MINIO_USE_SSL", "value": env::var("MINIO_USE_SSL").unwrap()},
-                            {"name": "MINIO_OUTPUT_BUCKET", "value": ""},
+                            {"name": "MINIO_OUTPUT_BUCKET", "value": "INVALID"},
 
                             {"name": "MQ_BROKER_URL", "value": env::var("MQ_BROKER_URL").unwrap()},
                             {"name": "MQ_OUTPUT_QUEUE", "value": "INVALID"},
                             {"name": "MQ_INPUT_QUEUE", "value": &pipeline_job.combiner_input_channel},
 
-                            {"name": "FRAGMENTER_INPUT", "value": "tts.sock"},
-                            {"name": "FRAGMENTER_OUTPUT", "value": "fts.sock"},
+                            {"name": "TRANSFORMATION_STEP_INPUT", "value": "tts.sock"},
+                            {"name": "TRANSFORMATION_STEP_OUTPUT", "value": "fts.sock"},
 
                         ]
                     }],

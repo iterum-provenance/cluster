@@ -42,13 +42,23 @@ impl Actor for PipelineActor {
 impl Handler<KubeJobStatusMessage> for PipelineActor {
     type Result = bool;
 
-    fn handle(&mut self, msg: KubeJobStatusMessage, _ctx: &mut Context<Self>) -> Self::Result {
+    fn handle(&mut self, msg: KubeJobStatusMessage, ctx: &mut Context<Self>) -> Self::Result {
         info!("Current pipeline status:");
 
         self.statuses = msg.kube_statuses;
-        for (key, value) in self.statuses.iter() {
-            info!("{}:\t{:?}", key, value.succeeded);
+        let success: Vec<bool> = self
+            .statuses
+            .iter()
+            .map(|(key, val)| {
+                info!("{}:\t{:?}", key, val.succeeded);
+                val.succeeded.is_some()
+            })
+            .filter(|val| !val)
+            .collect();
+        if success.is_empty() {
+            ctx.stop();
         }
+
         msg.status
     }
 }
@@ -73,7 +83,6 @@ async fn get_jobs_status(pipeline_job: PipelineJob, actor_addr: Addr<PipelineAct
         let status = job.status.clone().unwrap();
         statuses.insert(name, status);
     }
-
     actor_addr
         .send(KubeJobStatusMessage {
             status: true,
