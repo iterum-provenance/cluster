@@ -6,11 +6,12 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-# [[bin]]
-# name = "manager"
-# path = "src/main.rs"
+[[bin]]
+name = "manager"
+path = "src/main.rs"
 
 [dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
 async-std = "1.4.0"
 log = "0.4.0"
 env_logger = "0.7.1"

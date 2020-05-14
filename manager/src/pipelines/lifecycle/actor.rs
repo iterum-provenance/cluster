@@ -1,6 +1,8 @@
 use crate::pipelines::pipeline::PipelineJob;
 use actix::prelude::*;
 // use actix::Addr;
+use crate::pipelines::provenance::models::FragmentLineage;
+
 use k8s_openapi::api::batch::v1::{Job, JobStatus};
 use kube::{api::Api, api::ListParams, Client};
 use std::collections::HashMap;
@@ -19,6 +21,7 @@ pub struct PipelineActor {
     pub pipeline_job: PipelineJob,
     pub statuses: HashMap<String, JobStatus>,
     pub first_node_upstream_map: HashMap<String, String>,
+    pub lineage_map: HashMap<String, FragmentLineage>,
 }
 
 impl PipelineActor {}
@@ -34,23 +37,36 @@ impl Actor for PipelineActor {
         });
     }
 
-    fn stopped(&mut self, _ctx: &mut Context<Self>) {
+    fn stopped(&mut self, ctx: &mut Context<Self>) {
         info!("Pipeline actor is stopped");
+
+        Arbiter::spawn(send_lineage_data(
+            self.pipeline_job.pipeline_hash.to_string(),
+            self.lineage_map.clone(),
+        ));
     }
+}
+
+async fn send_lineage_data(
+    pipeline_hash: String,
+    provenance_data: HashMap<String, FragmentLineage>,
+) {
+    info!("Sending provenance info to the daemon");
+    warn!("NOT ACTUALLY SENDING INFO YET, UNIMPLEMENTED.");
 }
 
 impl Handler<KubeJobStatusMessage> for PipelineActor {
     type Result = bool;
 
     fn handle(&mut self, msg: KubeJobStatusMessage, ctx: &mut Context<Self>) -> Self::Result {
-        info!("Current pipeline status:");
+        debug!("Current pipeline status:");
 
         self.statuses = msg.kube_statuses;
         let success: Vec<bool> = self
             .statuses
             .iter()
             .map(|(key, val)| {
-                info!("{}:\t{:?}", key, val.succeeded);
+                debug!("{}:\t{:?}", key, val.succeeded);
                 val.succeeded.is_some()
             })
             .filter(|val| !val)
@@ -114,5 +130,26 @@ impl Handler<JobStatusMessage> for PipelineActor {
             },
             None => None,
         }
+    }
+}
+
+pub struct FragmentLineageMessage {
+    pub fragment_id: String,
+    pub fragment_lineage: FragmentLineage,
+}
+
+impl Message for FragmentLineageMessage {
+    type Result = bool;
+}
+
+impl Handler<FragmentLineageMessage> for PipelineActor {
+    type Result = bool;
+
+    fn handle(&mut self, msg: FragmentLineageMessage, _ctx: &mut Context<Self>) -> Self::Result {
+        info!("Received lineage for fragment: {}", msg.fragment_id);
+
+        self.lineage_map
+            .insert(msg.fragment_id, msg.fragment_lineage)
+            .is_none()
     }
 }

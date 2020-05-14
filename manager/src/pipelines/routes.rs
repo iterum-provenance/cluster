@@ -1,3 +1,4 @@
+use super::provenance;
 use crate::config;
 use crate::error::ManagerError;
 use crate::pipelines::lifecycle::actor::JobStatusMessage;
@@ -226,4 +227,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(delete_pipelines);
     cfg.service(get_pipeline_status);
     cfg.service(is_step_done);
+
+    provenance::routes::init_routes(cfg);
 }

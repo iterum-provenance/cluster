@@ -1,27 +1,29 @@
-# FROM rust
+# ------------------------------------------------------------------------------
+# Cargo Build Stage
+# ------------------------------------------------------------------------------
 
-# COPY src src
-# COPY Cargo.toml Cargo.toml
-
-# RUN cargo build --release
-# RUN mkdir -p /app
-# RUN cp ./target/release/manager /app
-
-# CMD /app/manager
-
-
-FROM rust
-
-RUN mkdir -p /app/manager_dir
-WORKDIR /app/manager_dir
+FROM rust:latest as cargo-build
+RUN apt-get update
+RUN apt-get install musl-tools -y
+RUN rustup target add x86_64-unknown-linux-musl
+WORKDIR /usr/src/manager
 COPY Cargo.toml Cargo.toml
-RUN mkdir src
+RUN mkdir src/
 RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
-RUN cargo build --release
-RUN rm -f target/release/deps/manager*
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+RUN rm -f target/x86_64-unknown-linux-musl/release/deps/manager*
 COPY src src
-RUN cargo build --release
-RUN cp ./target/release/manager /app
-CMD /app/manager
-# RUN cargo install --path .
-# CMD ["/usr/local/cargo/bin/manager"]
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo build --release --target=x86_64-unknown-linux-musl
+
+# ------------------------------------------------------------------------------
+# Final Stage
+# ------------------------------------------------------------------------------
+
+FROM alpine:latest
+RUN addgroup -g 1000 manager
+RUN adduser -D -s /bin/sh -u 1000 -G manager manager
+WORKDIR /home/manager/bin/
+COPY --from=cargo-build /usr/src/manager/target/x86_64-unknown-linux-musl/release/manager .
+RUN chown manager:manager manager
+USER manager
+CMD ["./manager"]
