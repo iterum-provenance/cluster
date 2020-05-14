@@ -6,7 +6,10 @@ use std::env;
 
 pub fn create_combiner_template(pipeline_job: &PipelineJob) -> Result<Job, ManagerError> {
     let hash = format!("{}-combiner", &pipeline_job.pipeline_hash);
-
+    let input_queue = format!(
+        "{}-{}",
+        &pipeline_job.pipeline_hash, &pipeline_job.combiner_input_channel
+    );
     let job: Job = serde_json::from_value(json!({
         "apiVersion": "batch/v1",
         "kind": "Job",
@@ -42,7 +45,7 @@ pub fn create_combiner_template(pipeline_job: &PipelineJob) -> Result<Job, Manag
 
                             {"name": "MQ_BROKER_URL", "value": env::var("MQ_BROKER_URL").unwrap()},
                             {"name": "MQ_OUTPUT_QUEUE", "value": "INVALID"},
-                            {"name": "MQ_INPUT_QUEUE", "value": &pipeline_job.combiner_input_channel},
+                            {"name": "MQ_INPUT_QUEUE", "value": &input_queue},
 
                             {"name": "TRANSFORMATION_STEP_INPUT", "value": "tts.sock"},
                             {"name": "TRANSFORMATION_STEP_OUTPUT", "value": "fts.sock"},

@@ -7,6 +7,10 @@ use std::env;
 pub fn create_fragmenter_template(pipeline_job: &PipelineJob) -> Result<Job, ManagerError> {
     let hash = format!("{}-fragmenter", &pipeline_job.pipeline_hash);
     let outputbucket = format!("{}-fragmenter-output", &pipeline_job.pipeline_hash);
+    let output_queue = format!(
+        "{}-{}",
+        &pipeline_job.pipeline_hash, &pipeline_job.fragmenter_output_channel
+    );
 
     let job: Job = serde_json::from_value(json!({
         "apiVersion": "batch/v1",
@@ -43,7 +47,7 @@ pub fn create_fragmenter_template(pipeline_job: &PipelineJob) -> Result<Job, Man
                             {"name": "MINIO_OUTPUT_BUCKET", "value": &outputbucket},
 
                             {"name": "MQ_BROKER_URL", "value": env::var("MQ_BROKER_URL").unwrap()},
-                            {"name": "MQ_OUTPUT_QUEUE", "value": &pipeline_job.fragmenter_output_channel},
+                            {"name": "MQ_OUTPUT_QUEUE", "value": &output_queue},
                             {"name": "MQ_INPUT_QUEUE", "value": "INVALID"},
 
                             {"name": "FRAGMENTER_INPUT", "value": "tts.sock"},

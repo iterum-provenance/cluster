@@ -118,6 +118,7 @@ async fn submit_pipeline_actor(
             pipeline_job: pipeline.clone(),
             statuses: HashMap::new(),
             first_node_upstream_map,
+            lineage_map: HashMap::new(),
         };
         let address = actor.start();
         let result = config.manager.send(NewPipelineMessage {

@@ -11,6 +11,8 @@ pub fn create_job_template(
 ) -> Result<Job, ManagerError> {
     let name = format!("{}-{}", pipeline_job.pipeline_hash, step.name);
     let outputbucket = format!("{}-output", &name);
+    let input_channel = format!("{}-{}", &pipeline_job.pipeline_hash, &step.input_channel);
+    let output_channel = format!("{}-{}", &pipeline_job.pipeline_hash, &step.output_channel);
 
     let job: Job = serde_json::from_value(json!({
         "apiVersion": "batch/v1",
@@ -43,8 +45,8 @@ pub fn create_job_template(
                             {"name": "MANAGER_URL", "value": env::var("MANAGER_URL").unwrap()},
 
                             {"name": "MQ_BROKER_URL", "value": env::var("MQ_BROKER_URL").unwrap()},
-                            {"name": "MQ_OUTPUT_QUEUE", "value": &step.output_channel},
-                            {"name": "MQ_INPUT_QUEUE", "value": &step.input_channel},
+                            {"name": "MQ_OUTPUT_QUEUE", "value": &output_channel},
+                            {"name": "MQ_INPUT_QUEUE", "value": &input_channel},
 
                             {"name": "TRANSFORMATION_STEP_INPUT", "value": "tts.sock"},
                             {"name": "TRANSFORMATION_STEP_OUTPUT", "value": "fts.sock"},

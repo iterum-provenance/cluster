@@ -52,6 +52,7 @@ async fn send_lineage_data(
     provenance_data: HashMap<String, FragmentLineage>,
 ) {
     info!("Sending provenance info to the daemon");
+    info!("Sending this: {:?}", provenance_data);
     warn!("NOT ACTUALLY SENDING INFO YET, UNIMPLEMENTED.");
 }
 

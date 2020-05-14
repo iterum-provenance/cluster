@@ -42,6 +42,25 @@ async fn submit_fragment_lineage(
     }
 }
 
+#[post("/dummy/pipeline/{pipeline_hash}/lineage/{fragment_id}")]
+async fn submit_fragment_lineage_dummy(
+    config: web::Data<config::Config>,
+    fragment_lineage: web::Json<FragmentLineage>,
+    path: web::Path<(String, String)>,
+) -> Result<HttpResponse, ManagerError> {
+    let (pipeline_hash, fragment_id) = path.into_inner();
+    info!(
+        "Submitting lineage of fragment: {}:{}",
+        pipeline_hash, fragment_id
+    );
+
+    let fragment_lineage = fragment_lineage.into_inner();
+
+    info!("{:?}", fragment_lineage);
+    Ok(HttpResponse::Ok().json(true))
+}
+
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(submit_fragment_lineage);
+    cfg.service(submit_fragment_lineage_dummy);
 }
