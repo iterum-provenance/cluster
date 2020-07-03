@@ -3,9 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: daemon-pv-claim
 spec:
-  storageClassName: manual
+  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
+      storage: 150Gi

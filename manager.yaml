@@ -14,9 +14,15 @@ spec:
       labels:
         app: manager
     spec:
+      serviceAccount: manager-service-account
+      serviceAccountName: manager-service-account
       containers:
       - name: manager
-        image: localhost:32000/manager:latest
+        image: iterum/manager:latest
+        resources:
+          requests:
+            cpu: "4000m"
+            memory: "2048Mi"
         env:
         - name: HOST
           value: "0.0.0.0"
@@ -26,6 +32,12 @@ spec:
           value: "manager=debug,actix=debug"
         - name: MQ_BROKER_URL
           value: "amqp://iterum:sinaasappel@iterum-mq-rabbitmq-ha:5672"
+        - name: MQ_BROKER_URL_MANAGEMENT
+          value: "http://iterum-mq-rabbitmq-ha:15672/api"
+        - name: MQ_BROKER_USERNAME
+          value: "iterum"
+        - name: MQ_BROKER_PASSWORD
+          value: "sinaasappel"
         - name: MINIO_URL
           value: "iterum-minio:9000"
         - name: MINIO_ACCESS_KEY
@@ -39,11 +51,11 @@ spec:
         - name: MANAGER_URL
           value: "http://manager-service:3001"
         - name: SIDECAR_IMAGE
-          value: "localhost:32000/sidecar:latest"
+          value: "iterum/sidecar:latest"
         - name: FRAGMENTER_SIDECAR_IMAGE
-          value: "localhost:32000/fragmenter-sidecar:latest"
+          value: "iterum/fragmenter-sidecar:latest"
         - name: COMBINER_IMAGE
-          value: "localhost:32000/combiner:latest"
+          value: "iterum/combiner:latest"
         ports:
         - containerPort: 3001
           hostPort: 3001

@@ -32,3 +32,8 @@ go build -o ./build/ && BROKER_URL=amqp://iterum:sinaasappel@localhost:5672 OUTP
 ```
 kubectl get pods | grep iterum-job | awk '{print $1}' | xargs kubectl delete pod
 ```
+
+* Add serviceaccount for the manager
+```
+kubectl create clusterrolebinding default-view --clusterrole=view --serviceaccount=default:default
+```
