@@ -21,10 +21,6 @@ spec:
       containers:
       - name: daemon
         image: iterum/daemon:latest
-        resources:
-          requests:
-            cpu: "4000m"
-            memory: "4096Mi"
         env:
         - name: HOST
           value: "0.0.0.0"
