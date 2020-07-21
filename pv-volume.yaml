@@ -5,10 +5,10 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: local-path
   capacity:
-    storage: 150Gi
+    storage: 100Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/var/snap/microk8s/common/default-storage/daemon-storage"
+    path: "/localStorage/daemon-storage/"

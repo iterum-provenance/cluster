@@ -1,0 +1,36 @@
+resources:
+  requests:
+    memory: 5000Mi
+    cpu: 700m
+  limits:
+    memory: 5000Mi
+    cpu: 1500m
+rabbitmqUsername: "iterum"
+rabbitmqPassword: "sinaasappel"
+prometheus:
+  operator:
+    enabled: false
+rabbitmqMemoryHighWatermark: "0.7"
+rabbitmqMemoryHighWatermarkType: "relative"
+livenessProbe:
+  initialDelaySeconds: 120
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 60
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - 'rabbitmq-diagnostics -q ping'
+
+readinessProbe:
+  initialDelaySeconds: 20
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 60
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - 'rabbitmq-diagnostics -q ping'
+
