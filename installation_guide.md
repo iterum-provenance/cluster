@@ -76,5 +76,5 @@ kubectl port-forward service/daemon-service 3000
 After both services are forwarded to localhost, the CLI can be used to perform data versioning, but also the submit and manage pipelines. Instructions on how to install the CLI can be found [here](https://github.com/iterum-provenance). 
 
 ## Conclusion
-This concludes the setting up of Iterum. Iterum should now be accessible via the CLI, and each of the functionalities should be usable.
+This concludes the setting up of Iterum. Iterum should now be accessible via the CLI, through which all of the functionalities can be used.
 
