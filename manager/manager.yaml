@@ -48,11 +48,11 @@ spec:
         - name: MANAGER_URL
           value: "http://manager-service:3001"
         - name: SIDECAR_IMAGE
-          value: "iterum/sidecar:latest"
+          value: "iterum/sidecar:v0.4.0"
         - name: FRAGMENTER_SIDECAR_IMAGE
-          value: "iterum/fragmenter-sidecar:latest"
+          value: "iterum/fragmenter-sidecar:v0.4.0"
         - name: COMBINER_IMAGE
-          value: "iterum/combiner:latest"
+          value: "iterum/combiner:v0.3.0"
         ports:
         - containerPort: 3001
           hostPort: 3001

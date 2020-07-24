@@ -5,14 +5,8 @@ metadata:
  namespace: default
 rules:
 - apiGroups: [""]
-  #
-  # at the HTTP level, the name of the resource for accessing Pod
-  # objects is "pods"
   resources: ["pods"]
   verbs: ["get", "list", "watch", "delete", "deletecollection"]
 - apiGroups: ["batch", "extensions"]
-  #
-  # at the HTTP level, the name of the resource for accessing Job
-  # objects is "jobs"
   resources: ["jobs"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection"]
