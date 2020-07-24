@@ -18,7 +18,7 @@ spec:
       serviceAccountName: manager-service-account
       containers:
       - name: manager
-        image: iterum/manager:latest
+        image: iterum/manager:v0.1
         resources:
         env:
         - name: HOST
