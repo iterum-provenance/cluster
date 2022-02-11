@@ -20,7 +20,7 @@ spec:
             claimName: daemon-pv-claim
       containers:
         - name: daemon
-          image: iterum/daemon:v0.4
+          image: iterum/daemon:v0.5
           env:
             - name: HOST
               value: "0.0.0.0"

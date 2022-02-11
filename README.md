@@ -50,6 +50,8 @@ helm install iterum-mq -f rabbit-mq-values.yaml bitnami/rabbitmq
 Run the following command to install MinIO on the cluster. This spawns a pod which runs a Minio instance accessible by the Iterum.
 
 ```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
 helm install --set auth.rootUser=iterum,auth.rootPassword=banaanappel iterum-minio bitnami/minio
 ```
 
