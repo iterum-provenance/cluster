@@ -17,46 +17,46 @@ spec:
       serviceAccount: manager-service-account
       serviceAccountName: manager-service-account
       containers:
-      - name: manager
-        image: iterum/manager:v0.1
-        resources:
-        env:
-        - name: HOST
-          value: "0.0.0.0"
-        - name: PORT
-          value: "3001"
-        - name: RUST_LOG
-          value: "manager=debug,actix=debug"
-        - name: MQ_BROKER_URL
-          value: "amqp://iterum:sinaasappel@iterum-mq-rabbitmq-ha:5672"
-        - name: MQ_BROKER_URL_MANAGEMENT
-          value: "http://iterum-mq-rabbitmq-ha:15672/api"
-        - name: MQ_BROKER_USERNAME
-          value: "iterum"
-        - name: MQ_BROKER_PASSWORD
-          value: "sinaasappel"
-        - name: MINIO_URL
-          value: "iterum-minio:9000"
-        - name: MINIO_ACCESS_KEY
-          value: "iterum"
-        - name: MINIO_SECRET_KEY
-          value: "banaanappel"
-        - name: MINIO_USE_SSL
-          value: "0"
-        - name: DAEMON_URL
-          value: "http://daemon-service:3000"
-        - name: MANAGER_URL
-          value: "http://manager-service:3001"
-        - name: SIDECAR_IMAGE
-          value: "iterum/sidecar:v0.4.0"
-        - name: FRAGMENTER_SIDECAR_IMAGE
-          value: "iterum/fragmenter-sidecar:v0.4.0"
-        - name: COMBINER_IMAGE
-          value: "iterum/combiner:v0.3.0"
-        ports:
-        - containerPort: 3001
-          hostPort: 3001
-          name: http
+        - name: manager
+          image: iterum/manager:v0.4
+          resources:
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "3001"
+            - name: RUST_LOG
+              value: "manager=debug,actix=debug"
+            - name: MQ_BROKER_URL
+              value: "amqp://iterum:sinaasappel@iterum-mq-rabbitmq:5672"
+            - name: MQ_BROKER_URL_MANAGEMENT
+              value: "http://iterum-mq-rabbitmq:15672/api"
+            - name: MQ_BROKER_USERNAME
+              value: "iterum"
+            - name: MQ_BROKER_PASSWORD
+              value: "sinaasappel"
+            - name: MINIO_URL
+              value: "iterum-minio:9000"
+            - name: MINIO_ACCESS_KEY
+              value: "iterum"
+            - name: MINIO_SECRET_KEY
+              value: "banaanappel"
+            - name: MINIO_USE_SSL
+              value: "0"
+            - name: DAEMON_URL
+              value: "http://daemon-service:3000"
+            - name: MANAGER_URL
+              value: "http://manager-service:3001"
+            - name: SIDECAR_IMAGE
+              value: "iterum/sidecar:v0.4.0"
+            - name: FRAGMENTER_SIDECAR_IMAGE
+              value: "iterum/fragmenter-sidecar:v0.4.0"
+            - name: COMBINER_IMAGE
+              value: "iterum/combiner:v0.3.0"
+          ports:
+            - containerPort: 3001
+              hostPort: 3001
+              name: http
 ---
 kind: Service
 apiVersion: v1
@@ -66,7 +66,7 @@ spec:
   selector:
     app: manager
   ports:
-  - protocol: TCP
-    targetPort: 3001
-    port: 3001
+    - protocol: TCP
+      targetPort: 3001
+      port: 3001
   type: ClusterIP

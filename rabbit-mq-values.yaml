@@ -1,5 +1,8 @@
 rabbitmqUsername: "iterum"
 rabbitmqPassword: "sinaasappel"
+auth:
+  username: iterum
+  password: "sinaasappel"
 prometheus:
   operator:
     enabled: false

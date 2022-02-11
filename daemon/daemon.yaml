@@ -15,28 +15,28 @@ spec:
         app: daemon
     spec:
       volumes:
-      - name: daemon-pv-storage
-        persistentVolumeClaim:
-          claimName: daemon-pv-claim
+        - name: daemon-pv-storage
+          persistentVolumeClaim:
+            claimName: daemon-pv-claim
       containers:
-      - name: daemon
-        image: iterum/daemon:v0.1
-        env:
-        - name: HOST
-          value: "0.0.0.0"
-        - name: PORT
-          value: "3000"
-        - name: RUST_LOG
-          value: "daemon=debug,actix=debug"
-        - name: LOCAL_CONFIG_PATH
-          value: "/localStorage/.local_config"
-        ports:
-        - containerPort: 3000
-          hostPort: 3000
-          name: http
-        volumeMounts:
-        - mountPath: "/localStorage/"
-          name: daemon-pv-storage
+        - name: daemon
+          image: iterum/daemon:v0.4
+          env:
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "3000"
+            - name: RUST_LOG
+              value: "daemon=debug,actix=debug"
+            - name: LOCAL_CONFIG_PATH
+              value: "/localStorage/.local_config"
+          ports:
+            - containerPort: 3000
+              hostPort: 3000
+              name: http
+          volumeMounts:
+            - mountPath: "/localStorage/"
+              name: daemon-pv-storage
 ---
 kind: Service
 apiVersion: v1
@@ -46,7 +46,7 @@ spec:
   selector:
     app: daemon
   ports:
-  - protocol: TCP
-    targetPort: 3000
-    port: 3000
+    - protocol: TCP
+      targetPort: 3000
+      port: 3000
   type: NodePort
