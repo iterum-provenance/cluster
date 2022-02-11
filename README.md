@@ -42,6 +42,7 @@ Now the software components can be deployed on the cluster. It may take some tim
 Run the following command to install RabbitMQ on the cluster. This spawns 3 pods on the cluster for a high availability version of RabbitMQ.
 
 ```
+helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install iterum-mq -f rabbit-mq-values.yaml bitnami/rabbitmq
 ```
 
@@ -51,7 +52,6 @@ Run the following command to install MinIO on the cluster. This spawns a pod whi
 
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
-
 helm install --set auth.rootUser=iterum,auth.rootPassword=banaanappel iterum-minio bitnami/minio
 ```
 
